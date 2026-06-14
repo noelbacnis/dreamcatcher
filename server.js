@@ -3,6 +3,7 @@ import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 import helmet from 'helmet'
 import { initDatabase } from './config/database-init.js';
+import pool from './config/database.js';
 import dreamsRouter from './routes/dreams.js';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -21,8 +22,7 @@ const PORT = process.env.PORT || 3001;
 app.use(express.json());
 app.use(express.static(join(__dirname, 'public')));
 
-// API Routes
-app.use('/api/dreams', dreamsRouter);
+// health endpoint
 
 app.get('/health', async (req, res) => {
   try {
@@ -40,13 +40,16 @@ app.get('/health', async (req, res) => {
       uptime: process.uptime()
     })
   }
-});
+})
+
+// API Routes
+app.use('/api/dreams', dreamsRouter);
 
 // Initialize database then start server
-initDatabase().then(() => {
-  app.listen(PORT, () => {
-    console.log(`Server running on http://localhost:${PORT}`);
-  });
-}).catch(error => {
-  console.error('Failed to initialize database:', error);
+// initDatabase().then(() => {
+app.listen(PORT, () => {
+  console.log(`Server running on http://localhost:${PORT}`);
 });
+// }).catch(error => {
+//   console.error('Failed to initialize database:', error);
+// });
