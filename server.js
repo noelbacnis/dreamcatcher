@@ -46,7 +46,7 @@ app.get('/health', async (req, res) => {
 app.get('/shutdown', (req, res) => {
   console.log('=== MANUAL SHUTDOWN TRIGGERED ===');
   res.send('Shutting down...');
-  
+
   setTimeout(() => {
     process.kill(process.pid, 'SIGTERM');
   }, 100);
@@ -63,7 +63,7 @@ app.use('/api/dreams', dreamsRouter);
 let server;
 
 initDatabase().then(() => {
-  server = app.listen(PORT, () => { 
+  server = app.listen(PORT, () => {
     console.log(`Server running on http://localhost:${PORT}`);
   });
 }).catch(error => {
@@ -80,21 +80,22 @@ Challenge:
   (Then you can delete the shutdown endpoint and redeploy).
 */
 
-process.????('????', gracefulShutdown);
+process.on('SIGTERM', gracefulShutdown);
 
 async function gracefulShutdown() {
- console.log('SIGTERM received, shutting down gracefully');
+  console.log('SIGTERM received, shutting down gracefully');
   // Close the server first (stop accepting new connections)
- server.close(() => {
-   console.log('HTTP server closed');
- });
+  server.close(() => {
+    console.log('HTTP server closed');
+  });
   // Then close database pool
- try {
-   await pool.end();
-   console.log('Database pool closed');
-   ????
- } catch (error) {
-   console.error('Error closing database pool:', error);
-   ????
- }
+  try {
+    await pool.end();
+    console.log('Database pool closed');
+    exit(0)
+  } catch (error) {
+    console.error('Error closing database pool:', error);
+    exit(1)
+  }
 }
+
