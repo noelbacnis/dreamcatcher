@@ -92,10 +92,10 @@ async function gracefulShutdown() {
   try {
     await pool.end();
     console.log('Database pool closed');
-    exit(0)
+    process.exit(0)
   } catch (error) {
     console.error('Error closing database pool:', error);
-    exit(1)
+    process.exit(1)
   }
 }
 
